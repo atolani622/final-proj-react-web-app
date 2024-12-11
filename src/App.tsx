@@ -9,21 +9,26 @@ import Details from './CollegeRecipeFinder/pages/Details';
 import Dashboard from './CollegeRecipeFinder/pages/Dashboard';
 import { Provider } from 'react-redux';
 import store from './CollegeRecipeFinder/store';
+import { useState } from 'react';
+import { couldStartTrivia } from 'typescript';
 
 export default function App() {
+    const [recipes, setRecipes] = useState<any[]>([]);
   return (
     <HashRouter>
         <Provider store={store}>
         <div>
             <Routes>
-                <Route path="/" element={<Navigate to="/home" />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/details" element={<Details />} />
-                <Route path='/dasboard' element={<Dashboard />} />
+                <Route path="/" element={<Navigate to="/Home" />} />
+                <Route path="/Home" element={<Home />} />
+                <Route path="/Login" element={<Login />} />
+                <Route path="/Profile" element={<Profile />} />
+                <Route path="/Register" element={<Register />} />
+                <Route path="/Search" element={<Search />} />
+                <Route path="/Details" element={<Details />} />
+                <Route path='/Dashboard' element={<Dashboard 
+                recipes = {recipes} 
+                setRecipes = {setRecipes} />} />
             </Routes>
         </div>
         </Provider>

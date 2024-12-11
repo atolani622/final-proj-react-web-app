@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as client from "./client";
+import * as client from "../client";
+
 function Signup() {
     const [error, setError] = useState("");
     const [credentials, setCredentials] = useState({
@@ -9,12 +10,8 @@ function Signup() {
     });
     const navigate = useNavigate();
     const signup = async () => {
-        try {
             await client.signup(credentials);
             navigate("/profile");
-        } catch (err) {
-            setError(err.response.data.message);
-        }
     };
     return (
         <div>

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCurrentUser } from "./reducer";
-import * as client from "./client";
+import * as client from "../client";
 
 function Signin() {
-  const [error, setError] = useState(""); // State to handle errors
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [credentials, setCredentials] = useState<any>({});
@@ -14,12 +14,7 @@ function Signin() {
     const user =  await client.signin(credentials);
     if (!user) return;
     dispatch(setCurrentUser(user));
-    navigate("/dashboard");
-  };
-  
-
-  const goToDashboard = () => {
-    navigate("/dashboard"); // Hardcoded navigation to dashboard
+    navigate("/Dashboard");
   };
 
   return (
@@ -39,9 +34,6 @@ function Signin() {
         onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
       />
       <button onClick={signin}>Signin</button>
-
-      {/* Hardcoded button to navigate to dashboard */}
-      <button onClick={goToDashboard}>Go to Dashboard</button>
     </div>
   );
 }

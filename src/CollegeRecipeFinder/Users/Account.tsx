@@ -3,6 +3,7 @@ import Signin from "./Signin";
 import Signup from "./SignUp";
 import Profile from "../pages/Profile/index"
 import { useSelector } from "react-redux";
+import UserTable from "./Table";
 
 
 export default function Account() {
@@ -13,12 +14,12 @@ export default function Account() {
                 <tr>
                     <td valign="top">
                     <Routes>
-                        <Route path="/" element={<Navigate to={ currentUser ? "/Kanbas/Account/Profile" : "/Kanbas/Account/Signin"} />} />
+                        <Route path="/" element={<Navigate to={ currentUser ? "/Profile" : "/SignIn"} />} />
                         <Route path="/Signin" element={<Signin />} />
                         <Route path="/Profile" element={<Profile />} />
                         <Route path="/Signup" element={<Signup />} />
-                        <Route path="/Users" element={<Profile />} />
-                        <Route path="/Users/:uid" element={<Profile />} />
+                        <Route path="/Users" element={<UserTable />} />
+                        <Route path="/Users/:uid" element={<UserTable />} />
                     </Routes>
                 </td>
             </tr>

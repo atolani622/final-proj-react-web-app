@@ -1,4 +1,5 @@
 import Account from "../../Users/Account";
+import ProfileDetails from "../../Users/Profile";
 import Navigation from "../Navigation";
 
 export default function Profile() {
@@ -6,7 +7,7 @@ export default function Profile() {
         <div>
             <Navigation />
             <h1>Profile</h1>
-            <Account />
+            <ProfileDetails />
         </div>
     )
 }
