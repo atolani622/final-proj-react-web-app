@@ -1,4 +1,5 @@
 import axios from "axios";
+import { resolveTypeReferenceDirective } from "typescript";
 const axiosWithCredentials = axios.create({ withCredentials: true });
 export const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
 
@@ -53,3 +54,17 @@ export const profile = async () => {
   const response = await axiosWithCredentials.post(`${USERS_API}/profile`);
   return response.data;
 };
+
+export const likeRecipe = async (userId: string, recipeId: string) => {
+  const response = await axiosWithCredentials.post(`${RECIPES_API}/like`, {
+      userId,
+      recipeId,
+  });
+  return response.data;
+};
+
+export const getLikedRecipes = async(userId: string)=> {
+  const response = await axiosWithCredentials.get(`${USERS_API}/${userId}/likedRecipes`);
+  return response.data;
+};
+

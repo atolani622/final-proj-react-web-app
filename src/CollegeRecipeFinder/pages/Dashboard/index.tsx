@@ -1,7 +1,8 @@
 // src/components/Dashboard.js
 import { useState, useEffect } from "react";
 import Navigation from "../Navigation";
-import { getRecipes } from "../../client";
+import { getRecipes, likeRecipe } from "../../client";
+import { useSelector } from "react-redux";
 
 export default function Dashboard(
     { recipes, setRecipes }: {
@@ -9,6 +10,7 @@ export default function Dashboard(
         setRecipes: (course: any) => void
     }) {
     const [error, setError] = useState(null);
+
 
     useEffect(() => {
         const loadRecipes = async () => {
@@ -22,6 +24,17 @@ export default function Dashboard(
 
         loadRecipes();
     }, []);
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+
+    const handleLike = async (recipeId: string) => {
+        try {
+            const userId = currentUser._id
+            await likeRecipe(userId, recipeId);
+            alert("Recipe liked!");
+        } catch (err) {
+            alert("Failed to like recipe. Please try again.");
+        }
+    };
 
     return (
         <div>
@@ -36,6 +49,7 @@ export default function Dashboard(
                         <p>{recipe.description}</p>
                         <p><strong>Type:</strong> {recipe.type}</p>
                         <p><strong>Chef:</strong> {recipe.chef}</p>
+                        <button onClick={() => handleLike(recipe._id)}>Like</button>
                     </li>
                 ))}
             </ul>
