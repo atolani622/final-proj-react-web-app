@@ -17,6 +17,15 @@ function UserTable() {
             console.log(err);
         }
     };
+    const  handleFollow = async (chefId) => {
+        try {
+            const userId = currentUser._id
+            client.followChef(userId, chefId);
+            alert("Chef followed!");
+        } catch (err) {
+            alert("Failed to follow recipe. Please try again.");
+        }
+    };
 
     // Create a new user
     const createUser = async () => {
@@ -53,7 +62,9 @@ function UserTable() {
         fetchCurrentUser();
     }, []);
 
-    if (!currentUser || currentUser.role !== "ADMIN") {
+    if (!currentUser 
+        // || currentUser.role !== "ADMIN"
+        ) {
         return <p>You do not have permission to view this page.</p>;
     }
 
@@ -116,6 +127,11 @@ function UserTable() {
                             <td>
                                 <button className="btn btn-warning me-2">
                                     <BsPencil onClick={() => selectUser(user)} />
+                                </button>
+                            </td>
+                            <td>
+                                <button className="btn btn-warning me-2">
+                                    <BsPencil onClick={() => handleFollow(user._id)} />
                                 </button>
                             </td>
                         </tr>

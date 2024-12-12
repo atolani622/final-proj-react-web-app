@@ -4,7 +4,6 @@ import Home from './CollegeRecipeFinder/pages/Home';
 import Login from './CollegeRecipeFinder/pages/Login';
 import Profile from './CollegeRecipeFinder/pages/Profile';
 import Register from './CollegeRecipeFinder/pages/Register';
-import Search from './CollegeRecipeFinder/pages/Search';
 import Details from './CollegeRecipeFinder/pages/Details';
 import { Provider } from 'react-redux';
 import store from './CollegeRecipeFinder/store';
