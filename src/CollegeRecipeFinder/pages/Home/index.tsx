@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 export default function Home(
     { recipes, setRecipes }: {
         recipes: any[];
-        setRecipes: (course: any) => void
+        setRecipes: (recipe: any) => void
     }) {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function Home(
 
     // Handle recipe click to navigate to recipe details page
     const handleRecipeClick = (recipeId: string) => {
-        navigate(`/recipe/${recipeId}`);
+        navigate(`/Recipe/${recipeId}`);
     };
 
     return (

@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Navigation from "../Navigation";
 import { getRecipeDetails } from "../../client";
+import {likeRecipe, followChef } from "../../client";
+import { useSelector } from "react-redux";
 
 export default function RecipeDetails() {
-    const { recipeId } = useParams(); 
+    const { recipeId } = useParams();
     const [recipe, setRecipe] = useState<any>(null); // Use `any` for recipe
     const [error, setError] = useState<string | null>(null); // Error as a string or null
 
     useEffect(() => {
-        const fetchRecipe = async () => {
+        const loadRecipe = async () => {
             try {
                 const data = await getRecipeDetails(recipeId as string);
                 setRecipe(data);
@@ -19,8 +21,29 @@ export default function RecipeDetails() {
             }
         };
 
-        fetchRecipe();
+        loadRecipe();
     }, [recipeId]);
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+
+    const handleLike = async (recipeId: string) => {
+        try {
+            const userId = currentUser._id
+            await likeRecipe(userId, recipeId);
+            alert("Recipe liked!");
+        } catch (err) {
+            alert("Failed to like recipe. Please try again.");
+        }
+    };
+
+    const  handleFollow = async (chefId: string) => {
+        try {
+            const userId = currentUser._id
+            await followChef(userId, chefId);
+            alert("Chef followed!");
+        } catch (err) {
+            alert("Failed to follow recipe. Please try again.");
+        }
+    };
 
     if (error) {
         return (
@@ -44,8 +67,8 @@ export default function RecipeDetails() {
 
     return (
         <div>
-            <h1>{recipeId}</h1>
             <Navigation />
+            <h1>{recipe.title}</h1>
             <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
                 <h1>{recipe.title}</h1>
                 <img
@@ -66,7 +89,14 @@ export default function RecipeDetails() {
                         <li key={index}>{instruction}</li>
                     ))}
                 </ol>
-                <p><strong>Created By:</strong> {recipe.chefName}</p>
+                <p>
+                    <strong>Created By:</strong>
+                    {recipe.chefId.firstName
+                        ? `${recipe.chefId.firstName} ${recipe.chefId.lastName || ""}`.trim()
+                        : recipe.chefId.username}
+                </p>
+                <button onClick={() => handleLike(recipe._id)}>Like</button>
+                <button onClick={() => handleFollow(recipe.chefId)}>Follow</button>
             </div>
         </div>
     );

@@ -82,6 +82,6 @@ export const getFollowedChefs = async(userId: string) => {
 }
 
 export const getRecipeDetails = async (recipeId: string) => {
-  const response = await axios.get(`/api/recipes/${recipeId}`);
+  const response = await axios.get(`${RECIPES_API}/${recipeId}`);
   return response.data;
 };

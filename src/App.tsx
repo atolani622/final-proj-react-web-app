@@ -26,7 +26,7 @@ export default function App() {
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Search" element={<Search />} />
                 <Route path="/Details" element={<Details />} />
-                <Route path="/Recipe/:id" element={<RecipeDetails />} />
+                <Route path="/Recipe/:recipeId" element={<RecipeDetails />} />
             </Routes>
         </div>
         </Provider>
