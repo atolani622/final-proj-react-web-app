@@ -83,7 +83,7 @@ export default function Profile() {
                                 <li key={chef._id}>
                                     <Link to={`/Users/${chef._id}`}>
                                         {chef.firstName} {chef.lastName} ({chef.username})
-                                    </Link> {/* Link to user details */}
+                                    </Link> 
                                 </li>
                             ))}
                         </ul>

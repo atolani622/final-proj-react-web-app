@@ -37,6 +37,11 @@ export default function Home(
     return (
         <div>
             <Navigation />
+            <div>
+                Akshay Tolani
+                <a href="https://github.com/atolani622/final-proj-react-web-app">Web App</a>
+                <a href="https://github.com/atolani622/final-proj-node-server-app">Server</a>
+            </div>
             <div className="container mt-4">
                 <h1 className="text-center mb-4">Discover Delicious Recipes</h1>
                 {error && <p className="text-danger text-center">{error}</p>}

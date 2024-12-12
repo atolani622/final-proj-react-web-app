@@ -1,20 +1,32 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import * as client from "../client";
-import './ProfileDetails.css'
+import './ProfileDetails.css';
 import Navigation from "../pages/Navigation";
 
 export default function ProfileDetails() {
+    const [likedRecipes, setLikedRecipes] = useState<any[]>([]);
+    const [followedChefs, setFollowedChefs] = useState<any[]>([]);
     const [profile, setProfile] = useState<any>({});
     const [error, setError] = useState<string | null>(null);
-    const { id } = useParams()
+    const { id } = useParams();
     const navigate = useNavigate();
 
-    // Fetch the selected user's profile by ID
     const fetchProfile = async () => {
         try {
             const userProfile = await client.findUserById(id!); // Ensure `id` is used to fetch the correct profile
             setProfile(userProfile);
+
+            // Load liked recipes
+            const liked = await client.getLikedRecipes(id!);
+            setLikedRecipes(liked);
+
+            // Load followed chefs
+            const chefIds: string[] = await client.getFollowedChefs(id!);
+            const chefDetails = await Promise.all(
+                chefIds.map((chefId) => client.findUserById(chefId))
+            );
+            setFollowedChefs(chefDetails);
         } catch (err) {
             console.error("Error fetching profile:", err);
             setError("Failed to fetch user profile.");
@@ -44,17 +56,35 @@ export default function ProfileDetails() {
                     <p><strong>Last Name:</strong> {profile.lastName}</p>
                     <p><strong>Date of Birth:</strong> {profile.dob}</p>
                     <p><strong>Email:</strong> {profile.email}</p>
-                    <h4>Followed Users</h4>
-                    {error && <p style={{ color: "red" }}>Error: {error}</p>}
-                    {profile.followedChefs && profile.followedChefs.length > 0 ? (
+
+                    <h4>Liked Recipes</h4>
+                    {likedRecipes.length > 0 ? (
                         <ul>
-                            {profile.followedChefs.map((chef: any) => (
+                            {likedRecipes.map((recipe) => (
+                                <li key={recipe._id}>
+                                    <button
+                                        className="btn btn-link"
+                                        onClick={() => navigate(`/Recipe/${recipe._id}`)}
+                                    >
+                                        {recipe.title}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>This user has no liked recipes.</p>
+                    )}
+
+                    <h4>Followed Users</h4>
+                    {followedChefs.length > 0 ? (
+                        <ul>
+                            {followedChefs.map((chef: any) => (
                                 <li key={chef._id}>
                                     <button
                                         className="btn btn-link"
-                                        onClick={() => navigate(`/users/profile/${chef._id}`)}
+                                        onClick={() => navigate(`/users/${chef._id}`)}
                                     >
-                                        {chef._id}
+                                        {chef.firstName} {chef.lastName} ({chef.username})
                                     </button>
                                 </li>
                             ))}
