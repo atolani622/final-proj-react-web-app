@@ -1,0 +1,29 @@
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.card {
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.card-title:hover {
+    color: #0056b3;
+}

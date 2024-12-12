@@ -11,7 +11,7 @@ import store from './CollegeRecipeFinder/store';
 import { useState } from 'react';
 import RecipeDetails from './CollegeRecipeFinder/pages/RecipeDetails';
 import MyDashboard from './CollegeRecipeFinder/pages/Home/Dashboard';
-import RecipeSearch from './CollegeRecipeFinder/pages/Recipe/RecipeSearch';
+import RecipeSearch from './CollegeRecipeFinder/pages/Recipe';
 
 export default function App() {
     const [recipes, setRecipes] = useState<any[]>([]);
@@ -25,11 +25,10 @@ export default function App() {
                 <Route path="/Login" element={<Login />} />
                 <Route path="/Profile" element={<Profile />} />
                 <Route path="/Register" element={<Register />} />
-                <Route path="/Search" element={<Search />} />
+                <Route path="/Search" element={<RecipeSearch />} />
                 <Route path="/Details" element={<Details />} />
                 <Route path="/Recipe/:id" element={<RecipeDetails />} />
                 <Route path="/Dashboard" element={<MyDashboard />} />
-                <Route path="/RecipeDetails" element={<RecipeSearch />} />
             </Routes>
         </div>
         </Provider>

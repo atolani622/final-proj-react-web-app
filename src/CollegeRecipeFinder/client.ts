@@ -92,3 +92,15 @@ export const getRecipes = async () => {
     throw error;
   }
 };
+
+export const searchRecipe = async (query: string) => {
+  try {
+      const response = await axios.get(`${RECIPES_API}/search/${query}`);
+      return response.data; // Return the response data
+  } catch (error) {
+      console.error("Error searching for recipes");
+      throw error;
+  }
+};
+
+
