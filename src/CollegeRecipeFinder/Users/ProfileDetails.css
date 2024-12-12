@@ -1,0 +1,55 @@
+.wd-profile-screen {
+    margin: 20px auto;
+    max-width: 600px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.wd-profile-screen h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.wd-profile-screen p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.wd-profile-screen strong {
+    color: #333;
+}
+
+.wd-profile-screen ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.wd-profile-screen li {
+    margin: 5px 0;
+}
+
+.wd-profile-screen .btn-link {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 16px;
+}
+
+.wd-profile-screen .btn-link:hover {
+    color: #0056b3;
+}
+
+.wd-profile-screen p.error {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}

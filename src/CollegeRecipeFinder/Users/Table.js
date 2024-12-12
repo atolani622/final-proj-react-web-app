@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import * as client from "../client";
 import { BsFillCheckCircleFill, BsPencil, BsPlusCircleFill, BsTrash3Fill } from "react-icons/bs";
-
+import { useNavigate } from "react-router-dom";
 
 function UserTable() {
     const [users, setUsers] = useState([]);
     const [user, setUser] = useState({ username: "", password: "", role: "USER" });
     const [currentUser, setCurrentUser] = useState(null);
+    const navigate = useNavigate();
 
     // Fetch the current logged-in user's details
     const fetchCurrentUser = async () => {
@@ -17,14 +18,19 @@ function UserTable() {
             console.log(err);
         }
     };
-    const  handleFollow = async (chefId) => {
+
+    const handleFollow = async (chefId) => {
         try {
-            const userId = currentUser._id
-            client.followChef(userId, chefId);
-            alert("Chef followed!");
+            const userId = currentUser._id;
+            await client.followChef(userId, chefId);
+            alert("User followed successfully!");
         } catch (err) {
-            alert("Failed to follow recipe. Please try again.");
+            alert("Failed to follow user. Please try again.");
         }
+    };
+
+    const viewUserProfile = (userId) => {
+        navigate(`/Users/${userId}`);
     };
 
     // Create a new user
@@ -62,9 +68,7 @@ function UserTable() {
         fetchCurrentUser();
     }, []);
 
-    if (!currentUser 
-        // || currentUser.role !== "ADMIN"
-        ) {
+    if (!currentUser) {
         return <p>You do not have permission to view this page.</p>;
     }
 
@@ -77,6 +81,7 @@ function UserTable() {
                         <th>Username</th>
                         <th>First Name</th>
                         <th>Last Name</th>
+                        <th>Actions</th>
                     </tr>
                     <tr>
                         <td>
@@ -130,8 +135,13 @@ function UserTable() {
                                 </button>
                             </td>
                             <td>
-                                <button className="btn btn-warning me-2">
-                                    <BsPencil onClick={() => handleFollow(user._id)} />
+                                <button className="btn btn-primary" onClick={() => viewUserProfile(user._id)}>
+                                    View Profile
+                                </button>
+                            </td>
+                            <td>
+                                <button className="btn btn-success" onClick={() => handleFollow(user._id)}>
+                                    Follow
                                 </button>
                             </td>
                         </tr>

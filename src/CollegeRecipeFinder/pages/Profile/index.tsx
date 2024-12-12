@@ -59,32 +59,32 @@ export default function Profile() {
                 <ProfileDetails />
 
                 <div>
-                    <h2>Your Liked Recipes</h2>
-                    {error && <p style={{ color: "red" }}>Error: {error}</p>}
-                    {!error && likedRecipes.length === 0 && <p>No liked recipes yet!</p>}
-                    <ul>
-                        {likedRecipes.map((recipe) => (
-                            <li key={recipe._id}>
-                                <h3>{recipe.title}</h3>
-                                <p>{recipe.description}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div>
-                    <h2>Your Followed Chefs</h2>
-                    {error && <p style={{ color: "red" }}>Error: {error}</p>}
+                    <h2 className="mb-3">Followed Chefs</h2>
+                    {error && (
+                        <p className="text-danger">
+                            {error}
+                        </p>
+                    )}
                     {!error && followedChefs.length === 0 && (
                         <p>You are not following any chefs yet!</p>
                     )}
-                    <ul>
-                        {followedChefs.map((chef) => (
-                            <li key={chef}>
-                                <h3>{chef}</h3>
-                            </li>
-                        ))}
-                    </ul>
+                    {!error && followedChefs.length > 0 && (
+                        <ul className="list-group">
+                            {followedChefs.map((chef: any) => (
+                                <li key={chef._id} className="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>
+                                        {chef.firstName} {chef.lastName}
+                                    </span>
+                                    <button
+                                        className="btn btn-outline-primary"
+                                        onClick={() => window.location.href = `/users/${chef._id}`}
+                                    >
+                                        View Profile
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             </div>
         </div>
