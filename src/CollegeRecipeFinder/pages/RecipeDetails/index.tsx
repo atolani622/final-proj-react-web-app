@@ -1,103 +1,61 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Navigation from "../Navigation";
 import { getRecipeDetails } from "../../client";
-import {likeRecipe, followChef } from "../../client";
-import { useSelector } from "react-redux";
 
-export default function RecipeDetails() {
-    const { recipeId } = useParams();
-    const [recipe, setRecipe] = useState<any>(null); // Use `any` for recipe
-    const [error, setError] = useState<string | null>(null); // Error as a string or null
+export default function RecipeDetail() { 
+    const { id } = useParams(); // Get the recipe ID from the URL
+    const [recipe, setRecipe] = useState<any>(null); // Local state for recipe
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadRecipe = async () => {
             try {
-                const data = await getRecipeDetails(recipeId as string);
-                setRecipe(data);
+                const data = await getRecipeDetails(id as string); // Fetch recipe details
+                console.log("Fetched recipe details:", data); // Debug log
+                setRecipe(data); // Set the fetched recipe data
             } catch (err) {
-                console.error("Failed to load recipe details.", err);
-                setError("Unable to load recipe details."); // Set error message
+                console.error("Failed to load recipe details:", err);
+                setError("Failed to fetch recipe details. Please try again later.");
             }
         };
 
         loadRecipe();
-    }, [recipeId]);
-    const { currentUser } = useSelector((state: any) => state.accountReducer);
-
-    const handleLike = async (recipeId: string) => {
-        try {
-            const userId = currentUser._id
-            await likeRecipe(userId, recipeId);
-            alert("Recipe liked!");
-        } catch (err) {
-            alert("Failed to like recipe. Please try again.");
-        }
-    };
-
-    const  handleFollow = async (chefId: string) => {
-        try {
-            const userId = currentUser._id
-            await followChef(userId, chefId);
-            alert("Chef followed!");
-        } catch (err) {
-            alert("Failed to follow recipe. Please try again.");
-        }
-    };
+    }, [id]); // Dependency array includes `id`
 
     if (error) {
-        return (
-            <div>
-                <Navigation />
-                <h1>Recipe Details</h1>
-                <p style={{ color: "red" }}>{error}</p>
-            </div>
-        );
+        return <p className="text-danger">{error}</p>;
     }
 
     if (!recipe) {
-        return (
-            <div>
-                <Navigation />
-                <h1>Recipe Details</h1>
-                <p>Loading...</p>
-            </div>
-        );
+        return <p>Loading recipe details...</p>;
     }
 
     return (
-        <div>
-            <Navigation />
-            <h1>{recipe.title}</h1>
-            <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-                <h1>{recipe.title}</h1>
-                <img
-                    src={recipe.image}
-                    alt={recipe.title}
-                    style={{ width: "100%", borderRadius: "8px", marginBottom: "20px" }}
-                />
-                <p><strong>Description:</strong> {recipe.description}</p>
-                <p><strong>Ingredients:</strong></p>
-                <ul>
-                    {recipe.ingredients && recipe.ingredients.map((ingredient: string, index: number) => (
-                        <li key={index}>{ingredient}</li>
-                    ))}
-                </ul>
-                <p><strong>Instructions:</strong></p>
-                <ol>
-                    {recipe.instructions && recipe.instructions.map((instruction: string, index: number) => (
-                        <li key={index}>{instruction}</li>
-                    ))}
-                </ol>
-                <p>
-                    <strong>Created By:</strong>
-                    {recipe.chefId.firstName
-                        ? `${recipe.chefId.firstName} ${recipe.chefId.lastName || ""}`.trim()
-                        : recipe.chefId.username}
-                </p>
-                <button onClick={() => handleLike(recipe._id)}>Like</button>
-                <button onClick={() => handleFollow(recipe.chefId)}>Follow</button>
-            </div>
+        <div className="container mt-4">
+            <h1 className="text-center">{recipe.title}</h1>
+            <img
+                src={recipe.image}
+                alt={recipe.title}
+                className="img-fluid rounded mx-auto d-block my-4"
+            />
+            <p><strong>Ready in:</strong> {recipe.readyInMinutes} minutes</p>
+            <p><strong>Servings:</strong> {recipe.servings}</p>
+            <h3>Ingredients</h3>
+            <ul>
+                {recipe.extendedIngredients.map((ingredient: any) => (
+                    <li key={ingredient.id}>{ingredient.original}</li>
+                ))}
+            </ul>
+            <h3>Instructions</h3>
+            <p>{recipe.instructions || "No instructions available."}</p>
+            <a
+                href={recipe.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary mt-4"
+            >
+                View Full Recipe on Source
+            </a>
         </div>
     );
 }

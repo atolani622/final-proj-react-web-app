@@ -3,78 +3,75 @@ import { useNavigate } from "react-router-dom";
 import Navigation from "../Navigation";
 import { getRecipes, likeRecipe, followChef } from "../../client";
 import { useSelector } from "react-redux";
+import "./Home.css";
 
 export default function Home(
     { recipes, setRecipes }: {
         recipes: any[];
         setRecipes: (recipe: any) => void
     }) {
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(null); // State for errors
     const navigate = useNavigate();
-
 
     useEffect(() => {
         const loadRecipes = async () => {
             try {
                 const data = await getRecipes();
-                setRecipes(data);
+                console.log("Fetched recipes:", data); // Debug log
+                setRecipes(data.recipes || []); // Ensure it assigns an array
             } catch (err) {
-                console.log("Failed to load recipes.");
+                console.error("Failed to load recipes:"); // Log detailed error
             }
         };
 
         loadRecipes();
     }, []);
-    const { currentUser } = useSelector((state: any) => state.accountReducer);
 
-    const handleLike = async (recipeId: string) => {
-        try {
-            const userId = currentUser._id
-            await likeRecipe(userId, recipeId);
-            alert("Recipe liked!");
-        } catch (err) {
-            alert("Failed to like recipe. Please try again.");
-        }
-    };
-
-    const  handleFollow = async (chefId: string) => {
-        try {
-            const userId = currentUser._id
-            await followChef(userId, chefId);
-            alert("Chef followed!");
-        } catch (err) {
-            alert("Failed to follow recipe. Please try again.");
-        }
-    };
-
-    // Handle recipe click to navigate to recipe details page
-    const handleRecipeClick = (recipeId: string) => {
+    const handleRecipeClick = (recipeId: any) => {
         navigate(`/Recipe/${recipeId}`);
     };
 
     return (
         <div>
             <Navigation />
-            <h1>Welcome to the Dashboard!</h1>
-            {error && <p style={{ color: "red" }}>Error: {error}</p>}
-            {!error && recipes.length === 0 && <p>Loading recipes...</p>}
-            <ul>
-                {recipes.map((recipe) => (
-                    <li key={recipe._id}>
-                        <h2
-                            style={{ cursor: "pointer", color: "blue" }}
-                            onClick={() => handleRecipeClick(recipe._id)}
-                        >
-                            {recipe.title}
-                        </h2>
-                        <p>{recipe.description}</p>
-                        <p><strong>Type:</strong> {recipe.type}</p>
-                        <p><strong>Chef:</strong> {recipe.chefId}</p>
-                        <button onClick={() => handleLike(recipe._id)}>Like</button>
-                        <button onClick={() => handleFollow(recipe.chefId)}>Follow</button>
-                    </li>
-                ))}
-            </ul>
+            <div className="container mt-4">
+                <h1 className="text-center mb-4">Discover Delicious Recipes</h1>
+                {error && <p className="text-danger text-center">{error}</p>}
+                {!error && recipes.length === 0 && <p className="text-center">Loading recipes...</p>}
+                <div className="row">
+                    {recipes.map((recipe) => (
+                        <div key={recipe.id} className="col-md-4 mb-4">
+                            <div className="card recipe-card h-100">
+                                <img
+                                    src={recipe.image}
+                                    alt={recipe.title}
+                                    className="card-img-top"
+                                />
+                                <div className="card-body">
+                                    <h5
+                                        className="card-title"
+                                        style={{ cursor: "pointer" }}
+                                        onClick={() => handleRecipeClick(recipe.id)}
+                                    >
+                                        {recipe.title}
+                                    </h5>
+                                    <p className="card-text">
+                                        {recipe.summary
+                                            ? recipe.summary.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 100) + "..."
+                                            : "No description available."}
+                                    </p>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => handleRecipeClick(recipe.id)}
+                                    >
+                                        View Recipe
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

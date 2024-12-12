@@ -3,6 +3,8 @@ import { resolveTypeReferenceDirective } from "typescript";
 const axiosWithCredentials = axios.create({ withCredentials: true });
 export const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
 
+
+export const BASE_URL = `${REMOTE_SERVER}`;
 export const USERS_API = `${REMOTE_SERVER}/api/users`;
 export const RECIPES_API = `${REMOTE_SERVER}/api/recipes`;
 
@@ -22,11 +24,6 @@ export const signout = async () => {
 };
 export const updateUser = async (user: any) => {
   const response = await axiosWithCredentials.put(`${USERS_API}/${user._id}`, user);
-  return response.data;
-};
-
-export const getRecipes = async () => {
-  const response = await axiosWithCredentials.get(RECIPES_API);
   return response.data;
 };
 
@@ -84,4 +81,14 @@ export const getFollowedChefs = async(userId: string) => {
 export const getRecipeDetails = async (recipeId: string) => {
   const response = await axios.get(`${RECIPES_API}/${recipeId}`);
   return response.data;
+};
+
+export const getRecipes = async () => {
+  try {
+      const response = await axios.get(RECIPES_API);
+      return response.data;
+  } catch (error) {
+      console.error("Error fetching recipes:", error);
+      throw error;
+  }
 };

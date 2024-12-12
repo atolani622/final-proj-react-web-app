@@ -1,6 +1,5 @@
 import UserTable from "../../Users/Table";
 import Navigation from "../Navigation";
-import RecipeDetails from "../RecipeDetails";
 
 export default function Details() {
     return (

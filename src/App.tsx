@@ -9,8 +9,9 @@ import Details from './CollegeRecipeFinder/pages/Details';
 import { Provider } from 'react-redux';
 import store from './CollegeRecipeFinder/store';
 import { useState } from 'react';
-import { couldStartTrivia } from 'typescript';
 import RecipeDetails from './CollegeRecipeFinder/pages/RecipeDetails';
+import MyDashboard from './CollegeRecipeFinder/pages/Home/Dashboard';
+import RecipeSearch from './CollegeRecipeFinder/pages/Recipe/RecipeSearch';
 
 export default function App() {
     const [recipes, setRecipes] = useState<any[]>([]);
@@ -26,7 +27,9 @@ export default function App() {
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Search" element={<Search />} />
                 <Route path="/Details" element={<Details />} />
-                <Route path="/Recipe/:recipeId" element={<RecipeDetails />} />
+                <Route path="/Recipe/:id" element={<RecipeDetails />} />
+                <Route path="/Dashboard" element={<MyDashboard />} />
+                <Route path="/RecipeDetails" element={<RecipeSearch />} />
             </Routes>
         </div>
         </Provider>
