@@ -33,7 +33,7 @@ export const findUserById = async (id: string) => {
 };
 
 export const deleteUser = async (userId: string) => {
-  const response = await axios.delete( `${USERS_API}/${userId}` );
+  const response = await axios.delete(`${USERS_API}/${userId}`);
   return response.data;
 };
 
@@ -54,26 +54,26 @@ export const profile = async () => {
 
 export const likeRecipe = async (userId: string, recipeId: string) => {
   const response = await axiosWithCredentials.post(`${RECIPES_API}/like`, {
-      userId,
-      recipeId,
+    userId,
+    recipeId,
   });
   return response.data;
 };
 
-export const getLikedRecipes = async(userId: string)=> {
-  const response = await axiosWithCredentials.get(`${USERS_API}/${userId}/likedRecipes`);
+export const getLikedRecipes = async (userId: string) => {
+  const response = await axiosWithCredentials.get(`${RECIPES_API}/liked/${userId}`);
   return response.data;
 };
 
 export const followChef = async (userId: string, chefId: string) => {
   const response = await axiosWithCredentials.post(`${USERS_API}/follow`, {
-      userId,
-      chefId,
+    userId,
+    chefId,
   });
   return response.data;
 };
 
-export const getFollowedChefs = async(userId: string) => {
+export const getFollowedChefs = async (userId: string) => {
   const response = await axiosWithCredentials.get(`${USERS_API}/${userId}/following`);
   return response.data
 }
@@ -85,10 +85,10 @@ export const getRecipeDetails = async (recipeId: string) => {
 
 export const getRecipes = async () => {
   try {
-      const response = await axios.get(RECIPES_API);
-      return response.data;
+    const response = await axios.get(RECIPES_API);
+    return response.data;
   } catch (error) {
-      console.error("Error fetching recipes:", error);
-      throw error;
+    console.error("Error fetching recipes:", error);
+    throw error;
   }
 };

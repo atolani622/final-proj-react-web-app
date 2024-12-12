@@ -10,36 +10,31 @@ export default function MyDashboard() {
     const [followedChefs, setFollowedChefs] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-
-    const { currentUser } = useSelector((state: any) => state.accountReducer);
+    const { currentUser } = useSelector((state: any) => state.accountReducer); // Get current user from Redux
 
     useEffect(() => {
+        if (!currentUser) {
+            setError("User is not logged in. Please log in to view your dashboard.");
+            return;
+        }
+
         const loadLikedRecipes = async () => {
             try {
-                const data = await getLikedRecipes(currentUser._id);
-                setLikedRecipes(data);
+                console.log("Fetching liked recipes for user:", currentUser._id);
+                const data = await getLikedRecipes(currentUser._id); // Fetch full recipe details
+                console.log("Liked recipes fetched:", data);
+                setLikedRecipes(data); // Set recipes in state
             } catch (err) {
-                console.error("Failed to load liked recipes.");
+                console.error("Failed to load liked recipes:");
                 setError("Unable to load liked recipes.");
             }
         };
 
-        const loadFollowedChefs = async () => {
-            try {
-                const data = await getFollowedChefs(currentUser._id);
-                setFollowedChefs(data);
-            } catch (err) {
-                console.error("Failed to load followed chefs.");
-                setError("Unable to load followed chefs.");
-            }
-        };
-
         loadLikedRecipes();
-        loadFollowedChefs();
-    }, [currentUser._id]);
+    }, [currentUser]);
 
     const handleRecipeClick = (recipeId: string) => {
-        navigate(`/Recipe/${recipeId}`);
+        navigate(`/Recipe/${recipeId}`); // Navigate to the recipe detail page
     };
 
     return (
@@ -47,41 +42,32 @@ export default function MyDashboard() {
             <Navigation />
             <div className="container mt-4">
                 <h1 className="text-center mb-4">Your Dashboard</h1>
-                {error && <p className="text-danger">Error: {error}</p>}
+                {error && <p className="text-danger text-center">{error}</p>}
 
                 <div className="row mb-5">
                     <h2 className="mb-4">Liked Recipes</h2>
-                    {!error && likedRecipes.length === 0 && (
-                        <p>No liked recipes yet!</p>
-                    )}
+                    {!error && likedRecipes.length === 0 && <p>No liked recipes yet!</p>}
                     {likedRecipes.map((recipe) => (
-                        <div key={recipe._id} className="col-md-6 mb-4">
+                        <div key={recipe.id} className="col-md-6 mb-4">
                             <div className="card h-100">
+                                <img
+                                    src={recipe.image}
+                                    alt={recipe.title}
+                                    className="card-img-top"
+                                />
                                 <div className="card-body">
                                     <h3
                                         className="card-title text-primary"
                                         style={{ cursor: "pointer" }}
-                                        onClick={() => handleRecipeClick(recipe._id)}
+                                        onClick={() => handleRecipeClick(recipe.id)}
                                     >
                                         {recipe.title}
                                     </h3>
-                                    <p className="card-text">{recipe.description}</p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="row">
-                    <h2 className="mb-4">Followed Chefs</h2>
-                    {!error && followedChefs.length === 0 && (
-                        <p>You are not following any chefs yet!</p>
-                    )}
-                    {followedChefs.map((chef) => (
-                        <div key={chef} className="col-md-6 mb-4">
-                            <div className="card h-100">
-                                <div className="card-body">
-                                    <h3 className="card-title">{chef}</h3>
+                                    <p className="card-text">
+                                        {recipe.summary
+                                            ? recipe.summary.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 100) + "..."
+                                            : "No description available."}
+                                    </p>
                                 </div>
                             </div>
                         </div>

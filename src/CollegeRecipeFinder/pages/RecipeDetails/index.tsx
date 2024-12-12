@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getRecipeDetails } from "../../client";
+import { getRecipeDetails, likeRecipe } from "../../client";
+import Navigation from "../Navigation";
+import { useSelector } from "react-redux";
 
-export default function RecipeDetail() { 
+export default function RecipeDetail() {
     const { id } = useParams(); // Get the recipe ID from the URL
     const [recipe, setRecipe] = useState<any>(null); // Local state for recipe
     const [error, setError] = useState<string | null>(null);
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
 
     useEffect(() => {
         const loadRecipe = async () => {
@@ -22,6 +25,16 @@ export default function RecipeDetail() {
         loadRecipe();
     }, [id]); // Dependency array includes `id`
 
+    const handleLikeRecipe = async (recipeId: string) => {
+        try {
+            await likeRecipe(currentUser._id, id as string);
+            alert("Recipe liked successfully!");
+        } catch (err) {
+            console.error("Failed to like recipe:");
+            alert("Unable to like recipe. Please try again.");
+        }
+    };
+
     if (error) {
         return <p className="text-danger">{error}</p>;
     }
@@ -31,31 +44,40 @@ export default function RecipeDetail() {
     }
 
     return (
-        <div className="container mt-4">
-            <h1 className="text-center">{recipe.title}</h1>
-            <img
-                src={recipe.image}
-                alt={recipe.title}
-                className="img-fluid rounded mx-auto d-block my-4"
-            />
-            <p><strong>Ready in:</strong> {recipe.readyInMinutes} minutes</p>
-            <p><strong>Servings:</strong> {recipe.servings}</p>
-            <h3>Ingredients</h3>
-            <ul>
-                {recipe.extendedIngredients.map((ingredient: any) => (
-                    <li key={ingredient.id}>{ingredient.original}</li>
-                ))}
-            </ul>
-            <h3>Instructions</h3>
-            <p>{recipe.instructions || "No instructions available."}</p>
-            <a
-                href={recipe.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary mt-4"
-            >
-                View Full Recipe on Source
-            </a>
+        <div>
+            <Navigation />
+            <div className="container mt-4">
+                <h1 className="text-center">{recipe.title}</h1>
+                <img
+                    src={recipe.image}
+                    alt={recipe.title}
+                    className="img-fluid rounded mx-auto d-block my-4"
+                />
+                <p><strong>Ready in:</strong> {recipe.readyInMinutes} minutes</p>
+                <p><strong>Servings:</strong> {recipe.servings}</p>
+                <h3>Ingredients</h3>
+                <ul>
+                    {recipe.extendedIngredients.map((ingredient: any) => (
+                        <li key={ingredient.id}>{ingredient.original}</li>
+                    ))}
+                </ul>
+                <h3>Instructions</h3>
+                <p>{recipe.instructions || "No instructions available."}</p>
+                <a
+                    href={recipe.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary mt-4"
+                >
+                    View Full Recipe on Source
+                </a>
+                <button
+                    className="btn btn-outline-secondary"
+                    onClick={() => handleLikeRecipe(recipe)}
+                >
+                    Like
+                </button>
+            </div>
         </div>
     );
 }

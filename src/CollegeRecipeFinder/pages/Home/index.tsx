@@ -13,6 +13,7 @@ export default function Home(
     const [error, setError] = useState(null); // State for errors
     const navigate = useNavigate();
 
+
     useEffect(() => {
         const loadRecipes = async () => {
             try {
@@ -30,6 +31,8 @@ export default function Home(
     const handleRecipeClick = (recipeId: any) => {
         navigate(`/Recipe/${recipeId}`);
     };
+
+
 
     return (
         <div>
@@ -66,6 +69,7 @@ export default function Home(
                                     >
                                         View Recipe
                                     </button>
+
                                 </div>
                             </div>
                         </div>
