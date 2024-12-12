@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { searchRecipe } from "../../client"; // Import the method
 import Navigation from "../Navigation";
 import "./Search.css";
 
@@ -12,15 +12,17 @@ export default function RecipeSearch() {
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         if (!query) {
             setError("Please enter a search query.");
             return;
         }
-
+    
         try {
             setError(null);
-
+            const data = await searchRecipe(query); // Fetch recipes using the searchRecipe method
+            console.log("Search results:", data); // Log the API response
+            setRecipes(data.results || []); // Ensure it assigns an array
         } catch (err) {
             console.error("Error searching for recipes:");
             setError("Failed to fetch search results. Please try again later.");

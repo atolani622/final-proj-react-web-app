@@ -6,6 +6,9 @@ export default function Navigation() {
             <Link to="/Home" className={`nav-link ${pathname.includes("home") ? "active" : ""}`}>
                 Home
             </Link>
+            <Link to="/Dashboard" className={`nav-link ${pathname.includes("dashboard") ? "active" : ""}`}>
+                Dashboard
+            </Link>
             <Link to="/Login" className={`nav-link ${pathname.includes("login") ? "active" : ""}`}>
                 Login
             </Link>
@@ -16,10 +19,7 @@ export default function Navigation() {
                 Search
             </Link>
             <Link to="/Details" className={`nav-link ${pathname.includes("details") ? "active" : ""}`}>
-                Details
-            </Link>
-            <Link to="/Recipe" className={`nav-link ${pathname.includes("recipe") ? "active" : ""}`}>
-                Recipe
+                Table
             </Link>
         </nav>
     );
