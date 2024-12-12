@@ -62,7 +62,15 @@ export default function RecipeDetail() {
                     ))}
                 </ul>
                 <h3>Instructions</h3>
-                <p>{recipe.instructions || "No instructions available."}</p>
+                {recipe.analyzedInstructions && recipe.analyzedInstructions.length > 0 ? (
+                    <ol>
+                        {recipe.analyzedInstructions[0].steps.map((step: any) => (
+                            <li key={step.number}>{step.step}</li>
+                        ))}
+                    </ol>
+                ) : (
+                    <p>No instructions available.</p>
+                )}
                 <a
                     href={recipe.sourceUrl}
                     target="_blank"

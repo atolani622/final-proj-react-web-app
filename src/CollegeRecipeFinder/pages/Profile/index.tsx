@@ -11,6 +11,8 @@ export default function Profile() {
     const { currentUser } = useSelector((state: any) => state.accountReducer);
 
     useEffect(() => {
+        if (!currentUser) return; // Exit if no user is signed in
+
         const loadLikedRecipes = async () => {
             try {
                 const data: any[] = await getLikedRecipes(currentUser._id);
@@ -33,39 +35,57 @@ export default function Profile() {
 
         loadLikedRecipes();
         loadFollowedChefs();
-    }, [currentUser._id]);
+    }, [currentUser]);
+
+    if (!currentUser) {
+        return (
+            <div>
+                <Navigation />
+                <div className="container mt-4">
+                    <h1 className="text-center mb-4">Profile</h1>
+                    <p className="text-center text-danger">
+                        No user is signed in. Please sign in to view your profile.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>
             <Navigation />
-            <h1>Profile</h1>
-            <ProfileDetails />
+            <div className="container mt-4">
+                <h1 className="text-center mb-4">Profile</h1>
+                <ProfileDetails />
 
-            <div>
-                <h2>Your Liked Recipes</h2>
-                {error && <p style={{ color: "red" }}>Error: {error}</p>}
-                {!error && likedRecipes.length === 0 && <p>No liked recipes yet!</p>}
-                <ul>
-                    {likedRecipes.map((recipe) => (
-                        <li key={recipe._id}>
-                            <h3>{recipe.title}</h3>
-                            <p>{recipe.description}</p>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+                <div>
+                    <h2>Your Liked Recipes</h2>
+                    {error && <p style={{ color: "red" }}>Error: {error}</p>}
+                    {!error && likedRecipes.length === 0 && <p>No liked recipes yet!</p>}
+                    <ul>
+                        {likedRecipes.map((recipe) => (
+                            <li key={recipe._id}>
+                                <h3>{recipe.title}</h3>
+                                <p>{recipe.description}</p>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
-            <div>
-                <h2>Your Followed Chefs</h2>
-                {error && <p style={{ color: "red" }}>Error: {error}</p>}
-                {!error && followedChefs.length === 0 && <p>You are not following any chefs yet!</p>}
-                <ul>
-                    {followedChefs.map((chef) => (
-                        <li key={chef}>
-                            <h3>{chef}</h3>
-                        </li>
-                    ))}
-                </ul>
+                <div>
+                    <h2>Your Followed Chefs</h2>
+                    {error && <p style={{ color: "red" }}>Error: {error}</p>}
+                    {!error && followedChefs.length === 0 && (
+                        <p>You are not following any chefs yet!</p>
+                    )}
+                    <ul>
+                        {followedChefs.map((chef) => (
+                            <li key={chef}>
+                                <h3>{chef}</h3>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </div>
     );
