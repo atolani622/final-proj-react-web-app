@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Navigation from "../Navigation";
-import { getLikedRecipes, getFollowedChefs } from "../../client";
+import { getLikedRecipes, getFollowedChefs, findUserById } from "../../client"; // Import the function to fetch user details
 import { useSelector } from "react-redux";
 import ProfileDetails from "../../Users/Profile";
 
@@ -11,7 +11,7 @@ export default function Profile() {
     const { currentUser } = useSelector((state: any) => state.accountReducer);
 
     useEffect(() => {
-        if (!currentUser) return; // Exit if no user is signed in
+        if (!currentUser) return;
 
         const loadLikedRecipes = async () => {
             try {
@@ -25,8 +25,11 @@ export default function Profile() {
 
         const loadFollowedChefs = async () => {
             try {
-                const data: any[] = await getFollowedChefs(currentUser._id);
-                setFollowedChefs(data);
+                const chefIds: string[] = await getFollowedChefs(currentUser._id); // Fetch the array of IDs
+                const chefDetails = await Promise.all(
+                    chefIds.map((id) => findUserById(id)) // Fetch each chef's details
+                );
+                setFollowedChefs(chefDetails);
             } catch (err) {
                 console.error("Failed to load followed chefs.");
                 setError("Unable to load followed chefs.");
@@ -57,33 +60,30 @@ export default function Profile() {
             <div className="container mt-4">
                 <h1 className="text-center mb-4">Profile</h1>
                 <ProfileDetails />
-
-                <div>
-                    <h2 className="mb-3">Followed Chefs</h2>
-                    {error && (
-                        <p className="text-danger">
-                            {error}
-                        </p>
+                <div className="mt-4">
+                    <h3>Liked Recipes</h3>
+                    {likedRecipes.length > 0 ? (
+                        <ul>
+                            {likedRecipes.map((recipe) => (
+                                <li key={recipe._id}>{recipe.title}</li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>You have no liked recipes yet.</p>
                     )}
-                    {!error && followedChefs.length === 0 && (
-                        <p>You are not following any chefs yet!</p>
-                    )}
-                    {!error && followedChefs.length > 0 && (
-                        <ul className="list-group">
-                            {followedChefs.map((chef: any) => (
-                                <li key={chef._id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>
-                                        {chef.firstName} {chef.lastName}
-                                    </span>
-                                    <button
-                                        className="btn btn-outline-primary"
-                                        onClick={() => window.location.href = `/users/${chef._id}`}
-                                    >
-                                        View Profile
-                                    </button>
+                </div>
+                <div className="mt-4">
+                    <h3>Followed Chefs</h3>
+                    {followedChefs.length > 0 ? (
+                        <ul>
+                            {followedChefs.map((chef) => (
+                                <li key={chef._id}>
+                                    {chef.firstName} {chef.lastName} ({chef.username})
                                 </li>
                             ))}
                         </ul>
+                    ) : (
+                        <p>You are not following anyone yet.</p>
                     )}
                 </div>
             </div>
