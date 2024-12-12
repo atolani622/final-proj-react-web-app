@@ -14,7 +14,7 @@ function Signin() {
     const user =  await client.signin(credentials);
     if (!user) return;
     dispatch(setCurrentUser(user));
-    navigate("/Dashboard");
+    navigate("/Home");
   };
 
   return (
