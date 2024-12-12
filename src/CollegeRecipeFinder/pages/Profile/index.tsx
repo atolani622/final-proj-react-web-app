@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Import Link for navigation
 import Navigation from "../Navigation";
-import { getLikedRecipes, getFollowedChefs, findUserById } from "../../client"; // Import the function to fetch user details
+import { getLikedRecipes, getFollowedChefs, findUserById } from "../../client";
 import { useSelector } from "react-redux";
 import ProfileDetails from "../../Users/Profile";
 
@@ -65,7 +66,9 @@ export default function Profile() {
                     {likedRecipes.length > 0 ? (
                         <ul>
                             {likedRecipes.map((recipe) => (
-                                <li key={recipe._id}>{recipe.title}</li>
+                                <li key={recipe._id}>
+                                    <Link to={`/Recipe/${recipe.id}`}>{recipe.title}</Link> {/* Link to recipe details */}
+                                </li>
                             ))}
                         </ul>
                     ) : (
@@ -78,7 +81,9 @@ export default function Profile() {
                         <ul>
                             {followedChefs.map((chef) => (
                                 <li key={chef._id}>
-                                    {chef.firstName} {chef.lastName} ({chef.username})
+                                    <Link to={`/Users/${chef._id}`}>
+                                        {chef.firstName} {chef.lastName} ({chef.username})
+                                    </Link> {/* Link to user details */}
                                 </li>
                             ))}
                         </ul>
