@@ -38,9 +38,9 @@ export default function Home(
         <div>
             <Navigation />
             <div>
-                Akshay Tolani
-                <a href="https://github.com/atolani622/final-proj-react-web-app">Web App</a>
-                <a href="https://github.com/atolani622/final-proj-node-server-app">Server</a>
+                Akshay Tolani &nbsp;
+                <a href="https://github.com/atolani622/final-proj-react-web-app">Web App</a> &nbsp;
+                <a href="https://github.com/atolani622/final-proj-node-server-app">Server</a> &nbsp;
             </div>
             <div className="container mt-4">
                 <h1 className="text-center mb-4">Discover Delicious Recipes</h1>
