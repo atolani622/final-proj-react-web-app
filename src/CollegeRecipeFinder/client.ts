@@ -6,6 +6,7 @@ export const REMOTE_SERVER = process.env.REACT_APP_REMOTE_SERVER;
 export const BASE_URL = `${REMOTE_SERVER}`;
 export const USERS_API = `${REMOTE_SERVER}/api/users`;
 export const RECIPES_API = `${REMOTE_SERVER}/api/recipes`;
+export const REVIEWS_API = `${REMOTE_SERVER}/api/reviews`;
 
 export const signin = async (credentials: any) => {
   const response = await axiosWithCredentials.post(`${USERS_API}/signin`, credentials);
@@ -100,6 +101,16 @@ export const searchRecipe = async (query: string) => {
       console.error("Error searching for recipes");
       throw error;
   }
+};
+
+export const saveReview = async (review: { recipeId: string | undefined; userId: any; rating: number; comment: string; }) => {
+  const response = await axios.post(`${REVIEWS_API}`, review);
+  return response.data;
+};
+
+export const getReviewsForRecipe = async (recipeId: string) => {
+  const response = await axios.get(`${REVIEWS_API}/${recipeId}`);
+  return response.data;
 };
 
 

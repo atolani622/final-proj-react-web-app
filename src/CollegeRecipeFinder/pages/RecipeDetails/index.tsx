@@ -1,46 +1,106 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getRecipeDetails, likeRecipe } from "../../client";
+import { getRecipeDetails, likeRecipe, getReviewsForRecipe, saveReview } from "../../client";
 import Navigation from "../Navigation";
 import { useSelector } from "react-redux";
 
 export default function RecipeDetail() {
-    const { id } = useParams(); // Get the recipe ID from the URL
-    const [recipe, setRecipe] = useState<any>(null); // Local state for recipe
+    const { id } = useParams<{ id: string }>();
+    const [recipe, setRecipe] = useState<any | null>(null);
+    const [reviews, setReviews] = useState<any[]>([]);
+    const [newReview, setNewReview] = useState({ rating: 1, comment: "" });
     const [error, setError] = useState<string | null>(null);
     const { currentUser } = useSelector((state: any) => state.accountReducer);
 
     useEffect(() => {
         const loadRecipe = async () => {
             try {
-                const data = await getRecipeDetails(id as string); // Fetch recipe details
-                console.log("Fetched recipe details:", data); // Debug log
-                setRecipe(data); // Set the fetched recipe data
+                if (!id) {
+                    setError("Recipe ID is missing.");
+                    return;
+                }
+                const data = await getRecipeDetails(id);
+                setRecipe(data);
             } catch (err) {
                 console.error("Failed to load recipe details:", err);
                 setError("Failed to fetch recipe details. Please try again later.");
             }
         };
 
-        loadRecipe();
-    }, [id]); // Dependency array includes `id`
+        const loadReviews = async () => {
+            try {
+                if (!id) return;
+                const data = await getReviewsForRecipe(id);
+                setReviews(data);
+            } catch (err) {
+                console.error("Failed to load reviews:", err);
+            }
+        };
 
-    const handleLikeRecipe = async (recipeId: string) => {
+        loadRecipe();
+        loadReviews();
+    }, [id]);
+
+    const handleReviewSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!currentUser) {
+            alert("You must be logged in to submit a review.");
+            return;
+        }
+
+        try {
+            const review = {
+                recipeId: id as string,
+                userId: currentUser._id,
+                rating: newReview.rating,
+                comment: newReview.comment,
+            };
+
+            const savedReview = await saveReview(review);
+            setReviews((prev) => [savedReview, ...prev]);
+            setNewReview({ rating: 1, comment: "" });
+        } catch (err) {
+            console.error("Failed to submit review:", err);
+            alert("Failed to submit review. Please try again.");
+        }
+    };
+
+    const handleLikeRecipe = async () => {
+        if (!currentUser) {
+            alert("You must be logged in to like a recipe.");
+            return;
+        }
+
         try {
             await likeRecipe(currentUser._id, id as string);
             alert("Recipe liked successfully!");
         } catch (err) {
-            console.error("Failed to like recipe:");
+            console.error("Failed to like recipe:", err);
             alert("Unable to like recipe. Please try again.");
         }
     };
 
     if (error) {
-        return <p className="text-danger">{error}</p>;
+        return (
+            <div>
+                <Navigation />
+                <div className="container mt-4">
+                    <p className="text-danger">{error}</p>
+                </div>
+            </div>
+        );
     }
 
     if (!recipe) {
-        return <p>Loading recipe details...</p>;
+        return (
+            <div>
+                <Navigation />
+                <div className="container mt-4">
+                    <p>Loading recipe details...</p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -55,12 +115,14 @@ export default function RecipeDetail() {
                 />
                 <p><strong>Ready in:</strong> {recipe.readyInMinutes} minutes</p>
                 <p><strong>Servings:</strong> {recipe.servings}</p>
+
                 <h3>Ingredients</h3>
                 <ul>
                     {recipe.extendedIngredients.map((ingredient: any) => (
                         <li key={ingredient.id}>{ingredient.original}</li>
                     ))}
                 </ul>
+
                 <h3>Instructions</h3>
                 {recipe.analyzedInstructions && recipe.analyzedInstructions.length > 0 ? (
                     <ol>
@@ -71,6 +133,7 @@ export default function RecipeDetail() {
                 ) : (
                     <p>No instructions available.</p>
                 )}
+
                 <a
                     href={recipe.sourceUrl}
                     target="_blank"
@@ -81,10 +144,56 @@ export default function RecipeDetail() {
                 </a>
                 <button
                     className="btn btn-outline-secondary"
-                    onClick={() => handleLikeRecipe(recipe)}
+                    onClick={handleLikeRecipe}
                 >
                     Like
                 </button>
+
+                <div className="mt-4">
+                    <h3>Reviews</h3>
+                    {reviews.length > 0 ? (
+                        <ul>
+                            {reviews.map((review) => (
+                                <li key={review._id}>
+                                    <p>
+                                        <strong>{review.userId.username}</strong> ({review.rating}/5):
+                                    </p>
+                                    <p>{review.comment}</p>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No reviews yet. Be the first to review!</p>
+                    )}
+
+                    {currentUser && (
+                        <form onSubmit={handleReviewSubmit} className="mt-4">
+                            <div>
+                                <label>Rating:</label>
+                                <select
+                                    value={newReview.rating}
+                                    onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
+                                >
+                                    {[1, 2, 3, 4, 5].map((value) => (
+                                        <option key={value} value={value}>
+                                            {value}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label>Comment:</label>
+                                <textarea
+                                    value={newReview.comment}
+                                    onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                                />
+                            </div>
+                            <button type="submit" className="btn btn-success mt-2">
+                                Submit Review
+                            </button>
+                        </form>
+                    )}
+                </div>
             </div>
         </div>
     );

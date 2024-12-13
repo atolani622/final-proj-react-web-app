@@ -21,7 +21,8 @@ function UserTable() {
 
     const handleFollow = async (chefId) => {
         try {
-            const userId = currentUser._id;
+            const userId = currentUser?._id; // Use optional chaining for null safety
+            if (!userId) throw new Error("No current user logged in.");
             await client.followChef(userId, chefId);
             alert("User followed successfully!");
         } catch (err) {
@@ -35,42 +36,58 @@ function UserTable() {
 
     // Create a new user
     const createUser = async () => {
-        const newUser = await client.createUser(user);
-        setUsers([newUser, ...users]);
+        try {
+            const newUser = await client.createUser(user);
+            setUsers([newUser, ...users]);
+        } catch (err) {
+            console.error("Error creating user:", err);
+        }
     };
 
     // Select a user for editing
     const selectUser = async (user) => {
-        const u = await client.findUserById(user._id);
-        setUser(u);
+        try {
+            const u = await client.findUserById(user._id);
+            setUser(u);
+        } catch (err) {
+            console.error("Error selecting user:", err);
+        }
     };
 
     // Update user details
     const updateUser = async () => {
-        const status = await client.updateUser(user);
-        setUsers(users.map((u) => (u._id === user._id ? user : u)));
+        try {
+            const status = await client.updateUser(user);
+            setUsers(users.map((u) => (u._id === user._id ? user : u)));
+        } catch (err) {
+            console.error("Error updating user:", err);
+        }
     };
 
     // Fetch all users
     const fetchUsers = async () => {
-        const users = await client.findAllUsers();
-        setUsers(users);
+        try {
+            const users = await client.findAllUsers();
+            setUsers(users);
+        } catch (err) {
+            console.error("Error fetching users:", err);
+        }
     };
 
     // Delete a user
     const deleteUser = async (user) => {
-        await client.deleteUser(user._id);
-        setUsers(users.filter((u) => u._id !== user._id));
+        try {
+            await client.deleteUser(user._id);
+            setUsers(users.filter((u) => u._id !== user._id));
+        } catch (err) {
+            console.error("Error deleting user:", err);
+        }
     };
 
     useEffect(() => {
         fetchUsers();
         fetchCurrentUser();
     }, []);
-
-    if (!currentUser) {
-        return <p>You do not have permission to view this page.</p>;
-    }
 
     return (
         <div>
@@ -83,40 +100,42 @@ function UserTable() {
                         <th>Last Name</th>
                         <th>Actions</th>
                     </tr>
-                    <tr>
-                        <td>
-                            <input
-                                value={user.password}
-                                onChange={(e) => setUser({ ...user, password: e.target.value })}
-                            />
-                            <input
-                                value={user.username}
-                                onChange={(e) => setUser({ ...user, username: e.target.value })}
-                            />
-                        </td>
-                        <td>
-                            <input
-                                value={user.firstName}
-                                onChange={(e) => setUser({ ...user, firstName: e.target.value })}
-                            />
-                        </td>
-                        <td>
-                            <input
-                                value={user.lastName}
-                                onChange={(e) => setUser({ ...user, lastName: e.target.value })}
-                            />
-                        </td>
-                        <td>
-                            <select value={user.role} onChange={(e) => setUser({ ...user, role: e.target.value })}>
-                                <option value="USER">User</option>
-                                <option value="ADMIN">Admin</option>
-                            </select>
-                        </td>
-                        <td>
-                            <BsPlusCircleFill onClick={createUser} />
-                            <BsFillCheckCircleFill onClick={updateUser} className="me-2 text-success fs-1" />
-                        </td>
-                    </tr>
+                    {currentUser?.role === "ADMIN" && (
+                        <tr>
+                            <td>
+                                <input
+                                    value={user.password}
+                                    onChange={(e) => setUser({ ...user, password: e.target.value })}
+                                />
+                                <input
+                                    value={user.username}
+                                    onChange={(e) => setUser({ ...user, username: e.target.value })}
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    value={user.firstName}
+                                    onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    value={user.lastName}
+                                    onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+                                />
+                            </td>
+                            <td>
+                                <select value={user.role} onChange={(e) => setUser({ ...user, role: e.target.value })}>
+                                    <option value="USER">User</option>
+                                    <option value="ADMIN">Admin</option>
+                                </select>
+                            </td>
+                            <td>
+                                <BsPlusCircleFill onClick={createUser} />
+                                <BsFillCheckCircleFill onClick={updateUser} className="me-2 text-success fs-1" />
+                            </td>
+                        </tr>
+                    )}
                 </thead>
                 <tbody>
                     {users.map((user) => (
@@ -124,16 +143,6 @@ function UserTable() {
                             <td>{user.username}</td>
                             <td>{user.firstName}</td>
                             <td>{user.lastName}</td>
-                            <td>
-                                <button onClick={() => deleteUser(user)}>
-                                    <BsTrash3Fill />
-                                </button>
-                            </td>
-                            <td>
-                                <button className="btn btn-warning me-2">
-                                    <BsPencil onClick={() => selectUser(user)} />
-                                </button>
-                            </td>
                             <td>
                                 <button className="btn btn-primary" onClick={() => viewUserProfile(user._id)}>
                                     View Profile
@@ -144,6 +153,20 @@ function UserTable() {
                                     Follow
                                 </button>
                             </td>
+                            {currentUser?.role === "ADMIN" && (
+                                <>
+                                    <td>
+                                        <button onClick={() => deleteUser(user)}>
+                                            <BsTrash3Fill />
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button className="btn btn-warning me-2">
+                                            <BsPencil onClick={() => selectUser(user)} />
+                                        </button>
+                                    </td>
+                                </>
+                            )}
                         </tr>
                     ))}
                 </tbody>
